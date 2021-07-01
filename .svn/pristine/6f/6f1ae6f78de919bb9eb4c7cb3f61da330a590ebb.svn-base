@@ -1,0 +1,60 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
+using static System.Console;
+
+namespace MMC_LiamRaj
+{
+    public partial class Form1 : Form
+    {
+        List<Elements> elementsList = new List<Elements>();
+        //BindingSource binding = new BindingSource();
+
+        public Form1()
+        {
+            InitializeComponent();
+            KeyPreview = true;
+            _dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            _dgv.RowHeadersVisible = false;
+            Shown += Form1_Shown;
+            //_dgv.DataSource = binding;
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            //read from the Periodic Table.csv file using streamreader
+            StreamReader streamReader = new StreamReader(Path.GetFullPath(@"..\..\Periodic Table.csv"));
+            while (!streamReader.EndOfStream)
+            {
+                //get an individual line and split it on ',' to produce a list containing atomic number, symbol, name, mass
+                var line = streamReader.ReadLine().Split(',');
+
+                //create an element using the info from the line and add it to the element list
+                elementsList.Add(new Elements(line[2], Convert.ToDouble(line[3]), Convert.ToInt32(line[0]), line[1]));
+            }
+            ShowAll();
+            //binding.DataSource = elementsList;
+            
+            foreach(var item in elementsList)
+            {
+                _dgv.Rows.Add(item.at, item.el, item.sm, item.mas);
+            }
+        }
+
+        public void ShowAll()
+        {
+            _dgv.Columns[0].HeaderText = "Atomic No.";
+            _dgv.Columns[1].HeaderText = "Name";
+            _dgv.Columns[2].HeaderText = "Symbol";
+            _dgv.Columns[3].HeaderText = "Mass";
+
+        }
+    }
+}

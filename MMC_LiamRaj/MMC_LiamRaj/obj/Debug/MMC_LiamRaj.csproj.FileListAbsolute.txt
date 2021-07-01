@@ -1,0 +1,10 @@
+E:\2800_GroupStuff\MMC_LiamRaj\MMC_LiamRaj\bin\Debug\MMC_LiamRaj.exe.config
+E:\2800_GroupStuff\MMC_LiamRaj\MMC_LiamRaj\bin\Debug\MMC_LiamRaj.exe
+E:\2800_GroupStuff\MMC_LiamRaj\MMC_LiamRaj\bin\Debug\MMC_LiamRaj.pdb
+E:\2800_GroupStuff\MMC_LiamRaj\MMC_LiamRaj\obj\Debug\MMC_LiamRaj.csprojAssemblyReference.cache
+E:\2800_GroupStuff\MMC_LiamRaj\MMC_LiamRaj\obj\Debug\MMC_LiamRaj.Form1.resources
+E:\2800_GroupStuff\MMC_LiamRaj\MMC_LiamRaj\obj\Debug\MMC_LiamRaj.Properties.Resources.resources
+E:\2800_GroupStuff\MMC_LiamRaj\MMC_LiamRaj\obj\Debug\MMC_LiamRaj.csproj.GenerateResource.cache
+E:\2800_GroupStuff\MMC_LiamRaj\MMC_LiamRaj\obj\Debug\MMC_LiamRaj.csproj.CoreCompileInputs.cache
+E:\2800_GroupStuff\MMC_LiamRaj\MMC_LiamRaj\obj\Debug\MMC_LiamRaj.exe
+E:\2800_GroupStuff\MMC_LiamRaj\MMC_LiamRaj\obj\Debug\MMC_LiamRaj.pdb

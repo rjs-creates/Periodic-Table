@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MMC_LiamRaj
+{
+    public class Elements
+    {
+        private int atomicNumber;
+        private string name;
+        private string symbol;
+        private double mass;
+
+        
+        public int AtomicNumber { get { return atomicNumber; } }
+        public string Name { get { return name; } }
+        public string Symbol { get { return symbol; } }
+        public double Mass { get { return mass; } }
+
+        public Elements(string nameArg, double massArg,int atomicNumberArg, string symbolArg)
+        {
+            atomicNumber = atomicNumberArg;
+            name = nameArg;
+            mass = massArg;
+            symbol = symbolArg;
+        }
+
+    }
+}

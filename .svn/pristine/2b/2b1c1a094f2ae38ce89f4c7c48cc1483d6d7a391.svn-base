@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MMC_LiamRaj
+{
+    class Elements
+    {
+        private string ElementName;
+        private int AtomicNumber;
+        private string Symbol;
+        private double Mass;
+
+        public Elements(string name, double mass,int atm,String sm)
+        {
+            ElementName = name;
+            Mass = mass;
+            AtomicNumber = atm;
+            Symbol = sm;
+        }
+
+    }
+}

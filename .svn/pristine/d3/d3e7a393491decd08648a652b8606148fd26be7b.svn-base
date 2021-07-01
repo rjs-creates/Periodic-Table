@@ -1,0 +1,146 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
+using static System.Console;
+using System.Text.RegularExpressions;
+
+namespace MMC_LiamRaj
+{
+    public partial class Form1 : Form
+    {
+        IEnumerable<Elements> elementsList; //list containing all of the elements from the periodic table
+
+        public Form1()
+        {
+            InitializeComponent();
+            KeyPreview = true;
+            _dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            _dgv.RowHeadersVisible = false;
+            _dgv.AllowUserToAddRows = false;
+            Shown += Form1_Shown;           
+        }
+
+        private void Button_Click(object sender, EventArgs e)
+        {
+            //If no button was clicked get out
+            if (!(sender is Button))
+                return;
+
+            textBoxChemFormula.Text = "";
+
+            //Sorting by Element Name
+            if(ReferenceEquals(sender,button_Sort_Name))
+            {
+                var List = from s in elementsList orderby s.el select s;
+                ShowAll(List);
+            }
+
+            //Sorting by Element Atomic Number
+            if(ReferenceEquals(sender,button_Sort_Atomic))
+            {
+                var sortList = from s in elementsList orderby s.at select s;
+                ShowAll(sortList);
+            }
+
+            //Sorting by Element Symbol
+            if(ReferenceEquals(sender,button_Char_Symb))
+            {
+                var singleSymList = from s in elementsList where s.sm.Length < 2 orderby s.sm select s;
+                var doubleSymList = from s in elementsList where s.sm.Length > 1 orderby s.sm select s;
+                var whole = singleSymList.Concat(doubleSymList);
+                ShowAll(whole);
+            }
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            //create a streamreader to read from the Periodic Table.csv file
+            StreamReader streamReader = new StreamReader(Path.GetFullPath(@"..\..\Periodic Table.csv"));
+
+            //Getting all the values from the file
+            var whole = from s in streamReader.ReadToEnd().Split('\n','\r') where !String.IsNullOrEmpty(s.Trim()) select s.Trim();
+
+            //Spliting data into lines for each element
+            var line = from z in whole select z.Split(',');
+
+            //Adding each element to our list
+            elementsList = from x in line select (new Elements(x[2], Convert.ToDouble(x[3]), Convert.ToInt32(x[0]), x[1]));
+
+            //Button click event subscription
+            button_Sort_Name.Click += Button_Click;
+            button_Sort_Atomic.Click += Button_Click;
+            button_Char_Symb.Click += Button_Click;
+
+            //display all the elements
+            ShowAll(elementsList);
+        }
+
+        public void ShowAll(IEnumerable<Elements> elementsList)
+        {
+            //clear the display
+            _dgv.Rows.Clear();
+            
+            //add the column headers
+            _dgv.Columns[0].HeaderText = "Atomic No.";
+            _dgv.Columns[1].HeaderText = "Name";
+            _dgv.Columns[2].HeaderText = "Symbol";
+            _dgv.Columns[3].HeaderText = "Mass";
+
+            //add the elements
+            foreach (var item in elementsList)
+            {
+                _dgv.Rows.Add(item.at, item.el, item.sm, item.mas);
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            //regex expression to look for chemical formulas
+            Regex regex = new Regex("[A-Z][a-z]?[0-9]*");
+
+            //match collection of all the elements from the textbox
+            MatchCollection matches = regex.Matches(/*"C6HN3O8Pb"*/textBoxChemFormula.Text);
+
+            //IEnumerable collection of element symbols
+            IEnumerable<string> test1 = from n in matches.Cast<Match>().ToArray() select n.Value;
+
+            //dictionary containing user's elements and their quantity
+            Dictionary<Elements, int> userElementsList = new Dictionary<Elements, int>();
+
+            //iterate though each element symbol
+            foreach(var item in matches)
+            {
+                string str = item.ToString();
+                string elementSymbol = Regex.Match(str, "[A-z]+").ToString();
+
+                int quantity = int.TryParse(Regex.Match(str, "[0-9]+").ToString(), out quantity) ? quantity : 1;
+
+                Elements element = (from n in elementsList where n.sm.Equals(elementSymbol) select n).First();
+
+                userElementsList.Add(element, quantity);
+            }
+
+            //clear the display
+            _dgv.Rows.Clear();
+
+            //add the column headers
+            _dgv.Columns[0].HeaderText = "Element";
+            _dgv.Columns[1].HeaderText = "Count";
+            _dgv.Columns[2].HeaderText = "Mass";
+            _dgv.Columns[3].HeaderText = "Total Mass";
+
+            //add the elements
+            foreach (var item in userElementsList)
+            {
+                _dgv.Rows.Add(item.Key.el, item.Value, item.Key.mas, item.Key.mas*item.Value);
+            }
+        }
+    }
+}

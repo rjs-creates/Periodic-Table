@@ -1,0 +1,35 @@
+﻿// Project : Linq Assignment - Molecular Mass Calculator(MMC)
+// Feb 3 2021
+// By Rajeshwar Singh , Liam Hailey
+//
+// Submission Code : 1202_CMPE2800_MMC
+// ///////////////////////////////////////////////////////////////////////////
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MMC_LiamRaj
+{
+    public class Elements
+    {
+        private int atomicNumber;
+        private string name;
+        private string symbol;
+        private double mass;
+        
+        public int AtomicNumber { get { return atomicNumber; } }
+        public string Name { get { return name; } }
+        public string Symbol { get { return symbol; } }
+        public double Mass { get { return mass; } }
+
+        public Elements(int atomicNumberArg, string nameArg, string symbolArg, double massArg)
+        {
+            atomicNumber = atomicNumberArg;
+            name = nameArg;
+            symbol = symbolArg;
+            mass = massArg;
+        }
+    }
+}

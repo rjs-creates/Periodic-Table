@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MMC_LiamRaj
+{
+    class Elements
+    {
+        private string ElementName;
+        private int Count;
+        private float Mass;
+        private float TotalMass;
+
+        public Elements(string name, int cnt, float mass, float ttlMass)
+        {
+            ElementName = name;
+            Count = cnt;
+            Mass = mass;
+            TotalMass = ttlMass;
+        }
+
+    }
+}

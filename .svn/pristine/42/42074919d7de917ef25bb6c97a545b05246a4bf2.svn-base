@@ -1,0 +1,176 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
+using static System.Console;
+using System.Text.RegularExpressions;
+
+namespace MMC_LiamRaj
+{
+    public partial class Form1 : Form
+    {
+        IEnumerable<Elements> elementsList; //list containing all of the elements from the periodic table
+        BindingSource bindingSource = new BindingSource();
+
+        public Form1()
+        {
+            InitializeComponent();
+            
+            //dataGridView settings
+            _dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            _dgv.RowHeadersVisible = false;
+            _dgv.AllowUserToAddRows = false;
+            _dgv.DataSource = bindingSource;
+
+            //event bindings
+            Shown += Form1_Shown;
+            button_Sort_Name.Click += Button_Click;
+            button_Sort_Atomic.Click += Button_Click;
+            button_Char_Symb.Click += Button_Click;
+        }
+
+        private void Button_Click(object sender, EventArgs e)
+        {
+            //If no button was clicked get out
+            if (!(sender is Button))
+                return;
+
+            //Sorting by Element Name
+            if(ReferenceEquals(sender,button_Sort_Name))
+            {
+                var List = from s in elementsList orderby s.Name select s;
+                bindingSource.DataSource = List;
+            }
+
+            //Sorting by Element Atomic Number
+            if(ReferenceEquals(sender,button_Sort_Atomic))
+            {
+                var sortList = from s in elementsList orderby s.AtomicNumber select s;
+                bindingSource.DataSource = sortList;
+            }
+
+            //Sorting by Element Symbol
+            if(ReferenceEquals(sender,button_Char_Symb))
+            {
+                //List of Single Character Elements ordered by character Symbol
+                var singleSymList = from s in elementsList where s.Symbol.Length == 1 orderby s.Symbol select s;
+
+                //List of Double Character Elements ordered by Character Symbol
+                var doubleSymList = from s in elementsList where s.Symbol.Length == 2 orderby s.Symbol select s;
+
+                //List of Double Character Elements ordered by Character Symbol
+                var tripleSymList = from s in elementsList where s.Symbol.Length == 3 orderby s.Symbol select s;
+
+                //Concatenating two Collection to make a bigger collection
+                var whole = (singleSymList.Concat(doubleSymList)).Concat(tripleSymList);
+                bindingSource.DataSource = whole;
+            }
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            //create a streamreader to read from the Periodic Table.csv file
+            StreamReader streamReader = new StreamReader(Path.GetFullPath(@"..\..\Periodic Table.csv"));
+
+            //Getting all the values from the file
+            var whole = from s in streamReader.ReadToEnd().Split('\n','\r') where !String.IsNullOrEmpty(s.Trim()) select s.Trim();
+
+            //Spliting data into lines for each element
+            var line = from z in whole select z.Split(',');
+
+            //Adding each element to our list
+            elementsList = from x in line select (new Elements(x[2], Convert.ToDouble(x[3]), Convert.ToInt32(x[0]), x[1]));
+
+            //display all the elements
+            bindingSource.DataSource = elementsList;
+        }
+
+        /*
+        public void ShowUsers(Dictionary<Elements, int> elements)
+        {
+            double molarMass = 0;
+
+            //clear the display
+            _dgv.Rows.Clear();
+
+            //add the column headers
+            _dgv.Columns[0].HeaderText = "Element";
+            _dgv.Columns[1].HeaderText = "Count";
+            _dgv.Columns[2].HeaderText = "Mass";
+            _dgv.Columns[3].HeaderText = "Total Mass";
+
+            //add the elements
+            foreach (var item in elements)
+            {
+                _dgv.Rows.Add(item.Key.Name, item.Value, item.Key.Mass, item.Key.Mass * item.Value);
+                molarMass += item.Value * item.Key.Mass;
+            }
+
+            labelMolarMass.Text = Math.Round(molarMass,2).ToString();
+        }*/
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                //regex expression to look for chemical formulas
+                Regex regex = new Regex("[A-Z][a-z]?[0-9]*");
+
+                //remove all valid elements from textbox and 
+                //throw error if there is any leftover bad input
+                if (Regex.Replace(textBoxChemFormula.Text, regex.ToString(), "").Length > 0)
+                    throw new ArgumentException("invalid input in textbox");
+                
+                //match collection of all the element symbols from the textbox
+                MatchCollection matches = regex.Matches(textBoxChemFormula.Text);
+
+                //IEnumerable collection of element symbols
+                IEnumerable<string> symbols = from n in matches.Cast<Match>().ToArray() select n.Value;
+
+                //dictionary containing user's elements and their quantity
+                Dictionary<Elements, int> userElementsList = new Dictionary<Elements, int>();
+
+                //iterate though each element symbol
+                foreach (string item in symbols)
+                {
+                    //get the symbol 
+                    string elementSymbol = Regex.Match(item, "[A-z]+").ToString();
+
+                    //get the quantity, default 1
+                    int quantity = int.TryParse(Regex.Match(item, "[0-9]+").ToString(), out quantity) ? quantity : 1;
+
+                    //get the element from the elementsList using the symbol
+                    Elements element = (from n in elementsList where n.Symbol.Equals(elementSymbol) select n).First();
+
+                    //add the element and its quantity to the user elements
+                    userElementsList.Add(element, quantity);
+                }
+
+
+
+                //display the user elements
+                //ShowUsers(userElementsList);
+                bindingSource.DataSource = from item in userElementsList
+                                           select new { Element = item.Key.Name, Count = item.Value, Mass = item.Key.Mass, TotalMass = item.Key.Mass*item.Value};
+
+
+                //change textbox color to green to show that the input is valid
+                textBoxChemFormula.ForeColor = Color.Green;
+                labelMolarMass.ForeColor = Color.Green;
+            }
+            catch
+            {
+                //change textbox color to red to show that the input is invalid
+                textBoxChemFormula.ForeColor = Color.Red;
+                labelMolarMass.ForeColor = Color.Red;
+            }
+
+        }
+    }
+}
